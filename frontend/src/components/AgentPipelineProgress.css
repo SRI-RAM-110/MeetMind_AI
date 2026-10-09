@@ -1,0 +1,189 @@
+.pipeline-progress-card {
+  margin-bottom: var(--space-6);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
+  animation: fadeIn 0.3s ease;
+}
+
+.pipeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.pipeline-header-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pipeline-header-title h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.pipeline-pulse-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-primary-400);
+  border-radius: 50%;
+  animation: pulseGlow 1.5s infinite;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.pipeline-badge {
+  font-size: var(--text-xs);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--color-primary-300);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  font-weight: 600;
+}
+
+.pipeline-progress-bar-container {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: var(--space-5);
+}
+
+.pipeline-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary-500), #8b5cf6, var(--color-accent-teal));
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pipeline-stages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.pipeline-stage-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.stage-done {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.stage-done .stage-icon-circle {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.stage-active {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.stage-active .stage-icon-circle {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: var(--color-primary-400);
+}
+
+.stage-pending {
+  opacity: 0.55;
+}
+
+.stage-icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.stage-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.stage-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stage-desc {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.stage-active-pill {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.3);
+  color: var(--color-primary-200);
+  font-weight: 600;
+  animation: pulseText 1s infinite alternate;
+}
+
+@keyframes pulseText {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+.pipeline-current-focus {
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+}
+
+.focus-label {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.focus-text {
+  color: var(--color-primary-300);
+}
