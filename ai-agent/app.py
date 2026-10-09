@@ -21,7 +21,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app)
+
+# Configure CORS (allow specific origins or wildcard)
+cors_origins_env = os.getenv("CORS_ALLOWED_ORIGINS", "*").strip()
+if cors_origins_env == "*":
+    CORS(app, resources={r"/*": {"origins": "*"}})
+else:
+    origins_list = [origin.strip() for origin in cors_origins_env.split(",") if origin.strip()]
+    CORS(app, resources={r"/*": {"origins": origins_list}})
 
 # Initialize Central Multi-Agent Orchestrator
 orchestrator = MeetingOrchestrator()
@@ -192,8 +199,37 @@ def transcribe_audio():
         }), 200
 
 
+@app.errorhandler(404)
+def handle_not_found(e):
+    return jsonify({
+        "error": "Not Found",
+        "message": "The requested resource was not found on this server.",
+        "status": 404
+    }), 404
+
+
+@app.errorhandler(405)
+def handle_method_not_allowed(e):
+    return jsonify({
+        "error": "Method Not Allowed",
+        "message": "The method is not allowed for the requested URL.",
+        "status": 405
+    }), 405
+
+
+@app.errorhandler(500)
+def handle_internal_server_error(e):
+    logger.error("Internal Server Error: %s", e, exc_info=True)
+    return jsonify({
+        "error": "Internal Server Error",
+        "message": "An internal server error occurred while processing the request.",
+        "status": 500
+    }), 500
+
+
 if __name__ == "__main__":
-    port = int(os.getenv("FLASK_PORT", 5001))
+    port = int(os.getenv("PORT", os.getenv("FLASK_PORT", 5001)))
     debug = os.getenv("FLASK_DEBUG", "False").lower() in ["true", "1"]
     logger.info("Starting MeetMind AI Multi-Agent Service on port %d...", port)
     app.run(host="0.0.0.0", port=port, debug=debug)
+

@@ -1,0 +1,78 @@
+# ==============================================================================
+# MeetMind AI - Render Infrastructure as Code Blueprint
+# https://render.com/docs/blueprint-spec
+# ==============================================================================
+# This blueprint defines the entire 3-tier architecture:
+# 1. meetmind-ai-agent: Python Flask multi-agent AI service (Gunicorn)
+# 2. meetmind-backend:  Java Spring Boot application (Docker)
+# 3. meetmind-frontend: React + Vite static SPA (Render Static Site)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. AI Agent Service (Python 3 + Flask + Groq Multi-Agent Orchestrator)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: meetmind-ai-agent
+    env: python
+    plan: free
+    region: oregon
+    rootDir: ai-agent
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false # Set securely in Render Dashboard
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_WHISPER_MODEL
+        value: whisper-large-v3
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "*"
+
+  # ----------------------------------------------------------------------------
+  # 2. Main Backend Service (Java 21 + Spring Boot 3.4.2 via Docker)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: meetmind-backend
+    env: docker
+    plan: free
+    region: oregon
+    rootDir: java-backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      # MongoDB Atlas connection string (e.g., mongodb+srv://<user>:<password>@cluster0.abcde.mongodb.net/meetmind_db?retryWrites=true&w=majority)
+      - key: MONGODB_URI
+        sync: false # Set securely in Render Dashboard
+      # URL of the deployed AI Agent service (e.g., https://meetmind-ai-agent.onrender.com)
+      - key: MEETMIND_AI_AGENT_URL
+        sync: false # Set in Render Dashboard with meetmind-ai-agent URL
+      # Allowed frontend origins for CORS (e.g., https://meetmind-frontend.onrender.com)
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false # Set in Render Dashboard with frontend URL
+      - key: SERVER_PORT
+        value: "8085"
+
+  # ----------------------------------------------------------------------------
+  # 3. Frontend Service (React 18 + Vite Static Site)
+  # ----------------------------------------------------------------------------
+  - type: static
+    name: meetmind-frontend
+    plan: free
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      # URL of the deployed Spring Boot backend (e.g., https://meetmind-backend.onrender.com)
+      - key: VITE_API_BASE_URL
+        sync: false # Set in Render Dashboard with backend URL

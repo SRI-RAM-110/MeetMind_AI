@@ -3,7 +3,21 @@
  * Interfaces exclusively with the Java Spring Boot Backend (default http://localhost:8080 or Vite proxy /api)
  */
 
-const API_BASE = '/api';
+/**
+ * Dynamically resolve API base URL:
+ * - Defaults to '/api' for local development via Vite proxy.
+ * - Supports full URL (e.g., https://meetmind-backend.onrender.com) for production Render deployment.
+ */
+function resolveApiBase() {
+  const envUrl = (import.meta.env.VITE_API_BASE_URL || '/api').trim().replace(/\/+$/, '');
+  if (!envUrl || envUrl === '/api') {
+    return '/api';
+  }
+  return envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`;
+}
+
+export const API_BASE = resolveApiBase();
+
 
 /**
  * Submits meeting notes and metadata to Spring Boot for validation, AI agent analysis, and persistence.
